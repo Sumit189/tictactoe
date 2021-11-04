@@ -55,6 +55,25 @@
     var draw_audio = new Audio("http://soundbible.com/grab.php?id=1466&type=mp3");
     var applause = new Audio("http://soundbible.com/grab.php?id=1964&type=mp3");
     function game_start(){
+        if(sessionStorage.getItem("p1_score")!=null) {
+            document.getElementById("p1_score").innerText = sessionStorage.getItem("p1_score");
+        }
+        else {
+            document.getElementById("p1_score").innerText = 0;
+        }
+        if(sessionStorage.getItem("p2_score")!=null) {
+            document.getElementById("p2_score").innerText = sessionStorage.getItem("p2_score");
+        }
+        else {
+            document.getElementById("p2_score").innerText = 0;
+        }
+        if(sessionStorage.getItem("tie_score")!=null) {
+            document.getElementById("tie_score").innerText = sessionStorage.getItem("tie_score");
+        }
+        else {
+            document.getElementById("tie_score").innerText = 0;
+        }
+
         draw_audio.pause();
         applause.pause();
         document.turn = "X";
@@ -86,6 +105,7 @@
                     square.innerText = document.turn;
                     document.getElementById("restart_btn").style.display = 'block';
                     document.getElementById("tie_score").innerText = parseInt(document.getElementById("tie_score").innerText) + 1;
+                    sessionStorage.setItem("tie_score", document.getElementById("tie_score").innerText);
                     alert("Its a Draw");
                  }
             } else {
@@ -105,9 +125,11 @@
             var winner_name = (document.turn) == "X" ? p1 : p2;
             if(document.winner == "X"){
                 document.getElementById("p1_score").innerText = parseInt(document.getElementById("p1_score").innerText) + 1;
+                sessionStorage.setItem("p1_score", document.getElementById("p1_score").innerText);
             }
             else{
                 document.getElementById("p2_score").innerText = parseInt(document.getElementById("p2_score").innerText) + 1;
+                sessionStorage.setItem("p2_score", document.getElementById("p2_score").innerText);
             }
             $.ajax({
                 url: "/games",
