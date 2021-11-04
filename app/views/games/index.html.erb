@@ -1,0 +1,185 @@
+<nav>
+  <center>
+    <h1 id="sitename" style="font-family: 'Roboto Slab', serif; font-size: 50px ">TIC TAC TOE</h1>
+  </center>
+  <center>
+    <div id = "menu">
+      <div id = "menu2">
+        <ul>
+          <li style="font-family: 'Roboto Slab', serif; "><a href="/tictactoe/start"  onclick="return confirm('It will delete all Match History')">Home</a></li>
+          <li class="active" style="font-family: 'Roboto Slab', serif; "><a href="/games">Game</a></li>
+          <li style="font-family: 'Roboto Slab', serif; "><a href="/match_history/show">Match History</a></li>
+
+        </ul>
+      </div>
+    </div>
+  </center>
+</nav>
+<div class="wrapper">
+  <div id = "s1" class="cell" onclick="nextMove(this)"></div>
+  <div id = "s2" class="cell" onclick="nextMove(this)"></div>
+  <div id = "s3" class="cell" onclick="nextMove(this)"></div>
+  <div id = "s4" class="cell" onclick="nextMove(this)"></div>
+  <div id = "s5" class="cell" onclick="nextMove(this)"></div>
+  <div id = "s6" class="cell" onclick="nextMove(this)"></div>
+  <div id = "s7" class="cell" onclick="nextMove(this)"></div>
+  <div id = "s8" class="cell" onclick="nextMove(this)"></div>
+  <div id = "s9" class="cell" onclick="nextMove(this)"></div>
+  <div id="message"></div>
+  <center>
+    <button id="restart_btn" class="btn btn-danger" onclick="restart()">Restart</button>
+  </center>
+</div>
+
+<center>
+<div class="scores">
+  <div class="row">
+    <div class="col p">
+      <h4><span id="player1" style="font-family: 'Roboto Slab', serif;"><%= session[:player1] %></span><span class="char" style="font-family: 'Roboto Slab', serif;"> - X</span></h4>
+      <h5 id="p1_score">0</h5>
+    </div>
+    <div class="col ties">
+      <h4 style="font-family: 'Roboto Slab', serif;">Ties</h4>
+      <h5 id="tie_score">0</h5>
+    </div>
+    <div class="col com">
+      <h4><span id="player2" style="font-family: 'Roboto Slab', serif;"><%= session[:player2] %></span><span class="char" style="font-family: 'Roboto Slab', serif;"> - O</span></h4>
+      <h5 id="p2_score">0</h5>
+    </div>
+  </div>
+</div>
+
+</center>
+
+<script>
+    var draw_audio = new Audio("http://soundbible.com/grab.php?id=1466&type=mp3");
+    var applause = new Audio("http://soundbible.com/grab.php?id=1964&type=mp3");
+    function game_start(){
+        draw_audio.pause();
+        applause.pause();
+        document.turn = "X";
+        document.getElementById("restart_btn").style.display = 'none';
+        var i;
+        for(i=1;i<=9;i++){
+            clear(i);
+        }
+        document.winner=null;
+        setMessage(document.turn + " gets to start");
+    }
+    document.winner = null;
+
+    function setMessage(msg) {
+        document.getElementById("message").innerText = msg;
+    }
+
+    function nextMove(square) {
+        if(document.winner == null) {
+            if (square.innerText == "") {
+                square.classList.add(document.turn);
+                square.innerText = document.turn;
+                if(!checkDraw())
+                  switchTurn();
+                else{
+                    draw_audio.play();
+                    setMessage("Draw");
+                    square.classList.add(document.turn);
+                    square.innerText = document.turn;
+                    document.getElementById("restart_btn").style.display = 'block';
+                    document.getElementById("tie_score").innerText = parseInt(document.getElementById("tie_score").innerText) + 1;
+                    alert("Its a Draw");
+                 }
+            } else {
+                setMessage("Area already taken");
+                document.getElementById("restart_btn").style.display= 'block';
+            }
+        }
+    }
+
+    function switchTurn() {
+        if (winner(document.turn)) {
+            setMessage(document.turn + " Won");
+            // window.alert(document.turn + " Won");
+            document.winner = document.turn;
+            var p1 = document.getElementById('player1').textContent;
+            var p2 = document.getElementById('player2').textContent;
+            var winner_name = (document.turn) == "X" ? p1 : p2;
+            if(document.winner == "X"){
+                document.getElementById("p1_score").innerText = parseInt(document.getElementById("p1_score").innerText) + 1;
+            }
+            else{
+                document.getElementById("p2_score").innerText = parseInt(document.getElementById("p2_score").innerText) + 1;
+            }
+            $.ajax({
+                url: "/games",
+                beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+                data: {game: {p1: p1,
+                              p2: p2,
+                              game_result: winner_name}},
+                type: "POST",
+                success: function(data){
+                    console.log(data);
+                    applause.play();
+                    alert("Congratulations:  "+winner_name+", you won...");
+                },
+                error: function(data){
+                    console.log(data);
+                }
+            });
+            document.getElementById("restart_btn").style.display = 'block';
+        } else if (document.turn == "X") {
+            document.turn = "O";
+            setMessage("It's " + document.turn + "'s turn");
+        } else {
+            document.turn = "X";
+            setMessage("It's " + document.turn + "'s turn")
+        }
+    }
+
+    function winner(move) {
+        var result = false;
+        if (checkRow(1, 2, 3, move) ||
+            checkRow(4, 5, 6, move) ||
+            checkRow(7, 8, 9, move) ||
+            checkRow(1, 4, 7, move) ||
+            checkRow(2, 5, 8, move) ||
+            checkRow(3, 6, 9, move) ||
+            checkRow(1, 5, 9, move) ||
+            checkRow(3, 5, 7, move)) {
+            result = true;
+        }
+        return result;
+    }
+    function checkDraw(){
+        var count = 0;
+        for(var i=1;i<=9;i++){
+            if(document.getElementById("s" +i).innerText!=""){
+                count++;
+            }
+
+        }
+        if(count == 9){
+
+            return true;
+        }
+        return false;
+    }
+    function checkRow(a, b, c, move) {
+        var result = false;
+        if (getBox(a) == move && getBox(b) == move && getBox(c) == move) {
+            result = true;
+        }
+        return result;
+    }
+
+    function getBox(number) {
+        return document.getElementById("s" + number).innerText;
+    }
+    function clear(number){
+        document.getElementById("s" + number).innerText="";
+        document.getElementById("s" + number).classList.remove("X");
+        document.getElementById("s" + number).classList.remove("O");
+    }
+    function restart(){
+        game_start();
+    }
+</script>
