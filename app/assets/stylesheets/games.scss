@@ -9,7 +9,7 @@ body, html {
 }
 #sitename{
   margin-top:10px;
-  font-size: 40px;
+  font-size: 50px;
 }
 
 .menu {
@@ -62,6 +62,10 @@ body, html {
   .menu{
     width: 50%;
   }
+  #sitename{
+    margin-top:10px;
+    font-size: 40px;
+  }
   .menu.responsive .icon {
     position: absolute;
     right: 0;
@@ -92,7 +96,7 @@ body, html {
   height: 90px;
   margin: 5px;
   border-radius: 10px;
-  background-color: #e7dada;
+  background-color: #fff;
   float: left;
   cursor: pointer;
   text-align: center;
@@ -100,6 +104,7 @@ body, html {
   font-size: 40px;
   color: #dedede;
   white-space: nowrap;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
 }
 
 #message {
