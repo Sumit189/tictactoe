@@ -2,16 +2,15 @@
   <center>
     <h1 id="sitename" style="font-family: 'Roboto Slab', serif; font-size: 50px ">TIC TAC TOE</h1>
   </center>
-  <center>
-    <div id = "menu">
-      <div id = "menu2">
-        <ul>
-          <li style="font-family: 'Roboto Slab', serif; "><a href="/tictactoe/start"  onclick="return confirm('It will delete all Match History')">Home</a></li>
-          <li class="active" style="font-family: 'Roboto Slab', serif; "><a href="/games">Game</a></li>
-          <li style="font-family: 'Roboto Slab', serif; "><a href="/match_history/show">Match History</a></li>
 
-        </ul>
-      </div>
+  <center>
+    <div class="menu" id="myMenu">
+      <a href="/tictactoe/start" style="font-family: 'Roboto Slab', serif; "  onclick="return confirm('It will delete all Match History')">Home</a>
+      <a href="/games" style="font-family: 'Roboto Slab', serif; " class="active" >Game</a>
+      <a href="/match_history/show" style="font-family: 'Roboto Slab', serif; ">Match History</a>
+      <a href="javascript:void(0);" class="icon" onclick="responsive_nav()">
+        <i class="fa fa-bars"></i>
+      </a>
     </div>
   </center>
 </nav>
@@ -52,9 +51,18 @@
 </center>
 
 <script>
+    function responsive_nav() {
+        var x = document.getElementById("myMenu");
+        if (x.className === "menu") {
+            x.className += " responsive";
+        } else {
+            x.className = "menu";
+        }
+    }
     var draw_audio = new Audio("http://soundbible.com/grab.php?id=1466&type=mp3");
     var applause = new Audio("http://soundbible.com/grab.php?id=1964&type=mp3");
     function game_start(){
+        document.getElementById("restart_btn").style.display = 'none';
         if(sessionStorage.getItem("p1_score")!=null) {
             document.getElementById("p1_score").innerText = sessionStorage.getItem("p1_score");
         }
@@ -77,7 +85,9 @@
         draw_audio.pause();
         applause.pause();
         document.turn = "X";
-        document.getElementById("restart_btn").style.display = 'none';
+        if(Math.random()<0.5){
+            document.turn="O";
+        }
         var i;
         for(i=1;i<=9;i++){
             clear(i);
