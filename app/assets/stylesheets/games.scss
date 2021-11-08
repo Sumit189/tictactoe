@@ -56,7 +56,12 @@ body, html {
 }
 
 @media screen and (max-width: 1211px) {
-  .menu.responsive {position: relative;}
+  .menu.responsive {
+    position: relative;
+  }
+  .menu{
+    width: 50%;
+  }
   .menu.responsive .icon {
     position: absolute;
     right: 0;
