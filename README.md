@@ -1,5 +1,8 @@
 # README
 # 2 PLAYER - TIC TAC TOE
+![Heroku](https://heroku-badge.herokuapp.com/?app=heroku-badge)
+<br>
+The web application is available at: https://warm-temple-46378.herokuapp.com/tictactoe/start
 ## Made with RoR 
 # Start 
 ### localhost:3000/tictactoe/start/
