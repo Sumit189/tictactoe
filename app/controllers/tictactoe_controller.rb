@@ -11,7 +11,7 @@ class TictactoeController < ApplicationController
         session[:error_msg] = ""
         session[:player1] = params[:Player1_Name]
         session[:player2] = params[:Player2_Name]
-        redirect_to :controller => "games"
+        redirect_to :controller => "games", :action => "index"
       end
       end
     end
