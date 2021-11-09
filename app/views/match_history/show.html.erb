@@ -12,7 +12,7 @@
   </div>
 </center>
 </nav>
-<div class="card rounded wrapper" style="width: 50%">
+<div class="card rounded card_hist" >
   <div class="card-header">
     <h2 class="card-title d-flex justify-content-between mb-2">
       <span>Match History</span>
@@ -39,9 +39,9 @@
       <% end %>
       </tbody>
     </table>
-  </div>
+    </div>
   <div class="card-footer">
-    <%= will_paginate @game, renderer: WillPaginate::ActionView::BootstrapLinkRenderer , class: 'btn btn-primary'%>
+    <%= will_paginate @game, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
     <h5>Overall Winner:  <%= Game.group(:game_result).order('game_result DESC').limit(1).pluck(:game_result).first %></h5>
   </div>
 </div>

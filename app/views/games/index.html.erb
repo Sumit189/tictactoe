@@ -56,6 +56,10 @@
     var applause = new Audio("http://soundbible.com/grab.php?id=1964&type=mp3");
     function game_start(){
         document.getElementById("restart_btn").style.display = 'none';
+        document.turn = "X";
+        if(Math.random()<0.5){
+            document.turn="O";
+        }
         if(sessionStorage.getItem("p1_score")!=null) {
             document.getElementById("p1_score").innerText = sessionStorage.getItem("p1_score");
         }
@@ -77,10 +81,6 @@
 
         draw_audio.pause();
         applause.pause();
-        document.turn = "X";
-        if(Math.random()<0.5){
-            document.turn="O";
-        }
         var i;
         for(i=1;i<=9;i++){
             clear(i);
@@ -99,7 +99,39 @@
             if (square.innerText == "") {
                 square.classList.add(document.turn);
                 square.innerText = document.turn;
-                if(!checkDraw())
+                if (winner(document.turn)) {
+                    setMessage(document.turn + " Won");
+                    document.winner = document.turn;
+                    var p1 = document.getElementById('player1').textContent;
+                    var p2 = document.getElementById('player2').textContent;
+                    var winner_name = (document.turn) == "X" ? p1 : p2;
+                    if(document.winner == "X"){
+                        document.getElementById("p1_score").innerText = parseInt(document.getElementById("p1_score").innerText) + 1;
+                        sessionStorage.setItem("p1_score", document.getElementById("p1_score").innerText);
+                    }
+                    else{
+                        document.getElementById("p2_score").innerText = parseInt(document.getElementById("p2_score").innerText) + 1;
+                        sessionStorage.setItem("p2_score", document.getElementById("p2_score").innerText);
+                    }
+                    $.ajax({
+                        url: "/games",
+                        beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+                        data: {game: {p1: p1,
+                                p2: p2,
+                                game_result: winner_name}},
+                        type: "POST",
+                        success: function(data){
+                            console.log(data);
+                            applause.play();
+                            alert("Congratulations:  "+winner_name+", you won...");
+                        },
+                        error: function(data){
+                            console.log(data);
+                        }
+                    });
+                    document.getElementById("restart_btn").style.display = 'block';
+                }
+                else if(!checkDraw())
                   switchTurn();
                 else{
                     draw_audio.play();
@@ -119,39 +151,7 @@
     }
 
     function switchTurn() {
-        if (winner(document.turn)) {
-            setMessage(document.turn + " Won");
-            // window.alert(document.turn + " Won");
-            document.winner = document.turn;
-            var p1 = document.getElementById('player1').textContent;
-            var p2 = document.getElementById('player2').textContent;
-            var winner_name = (document.turn) == "X" ? p1 : p2;
-            if(document.winner == "X"){
-                document.getElementById("p1_score").innerText = parseInt(document.getElementById("p1_score").innerText) + 1;
-                sessionStorage.setItem("p1_score", document.getElementById("p1_score").innerText);
-            }
-            else{
-                document.getElementById("p2_score").innerText = parseInt(document.getElementById("p2_score").innerText) + 1;
-                sessionStorage.setItem("p2_score", document.getElementById("p2_score").innerText);
-            }
-            $.ajax({
-                url: "/games",
-                beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
-                data: {game: {p1: p1,
-                              p2: p2,
-                              game_result: winner_name}},
-                type: "POST",
-                success: function(data){
-                    console.log(data);
-                    applause.play();
-                    alert("Congratulations:  "+winner_name+", you won...");
-                },
-                error: function(data){
-                    console.log(data);
-                }
-            });
-            document.getElementById("restart_btn").style.display = 'block';
-        } else if (document.turn == "X") {
+        if (document.turn == "X") {
             document.turn = "O";
             setMessage("It's " + document.turn + "'s turn");
         } else {
