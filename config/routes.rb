@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  root to: "tictactoe#start"
   get 'match_history/show'
   get 'tictactoe/start'
   post 'tictactoe/start'
